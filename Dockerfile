@@ -51,11 +51,10 @@ COPY --from=source /src/src ./src
 # build backend
 ARG BRANCH
 ARG VERSION
-RUN buildprops=./src/Directory.Build.props && \
-    sed -i "/<AssemblyConfiguration>/s/>.*<\//>$BRANCH<\//" "$buildprops" && \
-    sed -i "/<AssemblyVersion>/s/>.*<\//>$VERSION<\//" "$buildprops" && \
-    dotnet build ./src/Prowlarr.sln \
-        -p:RuntimeIdentifiers=$RUNTIME \
+RUN dotnet build ./src/Prowlarr.sln \
+        -p:AssemblyConfiguration="$BRANCH" \
+        -p:AssemblyVersion="$VERSION" \
+        -p:RuntimeIdentifiers="$RUNTIME" \
         -p:Configuration=Release \
         -p:SelfContained=false \
         -t:PublishAllRids && \
@@ -67,6 +66,7 @@ RUN buildprops=./src/Directory.Build.props && \
     mkdir /build && mv ./_output/net6.0/$RUNTIME/publish /build/bin
 
 # versioning (runtime)
+ARG COMMIT=$VERSION
 COPY <<EOF /build/package_info
 PackageAuthor=[fabricionaweb](https://github.com/fabricionaweb/docker-prowlarr)
 UpdateMethod=Docker
