@@ -8,7 +8,8 @@ FROM base AS source
 
 # get and extract source from git
 ARG VERSION
-ADD https://github.com/Prowlarr/Prowlarr.git#v$VERSION ./
+ADD https://github.com/Prowlarr/Prowlarr/archive/refs/tags/v$VERSION.tar.gz /tmp/source.tgz
+RUN tar --strip-components=1 -xf /tmp/source.tgz
 
 # apply available patches
 RUN apk add --no-cache patch
